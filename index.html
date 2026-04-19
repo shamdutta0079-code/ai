@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bidwiya AI</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="top">
+<div class="logo">AI</div>
+<div>
+<h2>BIDWIYA AI</h2>
+<p>Online Memory Assistant</p>
+</div>
+</div>
+
+<div id="chat"></div>
+
+<div class="row">
+<input id="msg" placeholder="Type message...">
+<button onclick="sendMsg()">Send</button>
+</div>
+
+</div>
+
+<script>
+
+function time(){
+let d=new Date();
+return d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");
+}
+
+function addMsg(text,type){
+
+document.getElementById("chat").innerHTML += `
+<div class="msg ${type}">
+${text}
+<span>${time()}</span>
+</div>
+`;
+
+document.getElementById("chat").scrollTop=999999;
+}
+
+async function sendMsg(){
+
+let input=document.getElementById("msg");
+let text=input.value.trim();
+
+if(text=="") return;
+
+addMsg(text,"user");
+input.value="";
+
+let res = await fetch("/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({msg:text})
+});
+
+let data = await res.json();
+
+addMsg(data.reply,"bot");
+
+new Audio("/voice?text="+encodeURIComponent(data.reply)).play();
+}
+
+document.getElementById("msg").addEventListener("keypress",function(e){
+if(e.key=="Enter") sendMsg();
+});
+
+</script>
+
+</body>
+</html>
