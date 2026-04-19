@@ -29,6 +29,7 @@ if not os.path.exists(MEMORY_FILE):
         f.write("User name is Ayan\n")
         f.write("Age 19\n")
         f.write("Likes coding\n")
+        f.write("Bidwiya is AI friend\n")
 
 # =========================
 # LOAD MEMORY
@@ -60,13 +61,13 @@ def ai_reply(msg):
             model="llama-3.3-70b-versatile",
             messages=[
                 {
-                    "role":"system",
-                    "content":f"""
+                    "role": "system",
+                    "content": f"""
 You are Bidwiya.
 
 You are a cute Bengali female AI friend.
 
-User name Ayan.
+User name is Ayan.
 
 Known memory:
 {memory}
@@ -76,8 +77,8 @@ Natural sweet talking style.
 """
                 },
                 {
-                    "role":"user",
-                    "content":msg
+                    "role": "user",
+                    "content": msg
                 }
             ],
             temperature=0.8,
@@ -94,14 +95,14 @@ Natural sweet talking style.
         return "Ami ekhon reply dite parchi na 😔"
 
 # =========================
-# EDGE TTS VOICE
+# EDGE TTS
 # =========================
-async def make_voice_async(text, file):
+async def make_voice_async(text, filename):
     communicate = edge_tts.Communicate(
         text=text,
         voice="bn-BD-NabanitaNeural"
     )
-    await communicate.save(file)
+    await communicate.save(filename)
 
 def make_voice(text):
     filename = f"{uuid.uuid4().hex}.mp3"
@@ -117,7 +118,6 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-
     data = request.get_json()
     msg = data["msg"]
 
@@ -133,9 +133,9 @@ def voice():
     if not text:
         text = "Hello"
 
-    file = make_voice(text)
+    filename = make_voice(text)
 
-    return send_file(file, mimetype="audio/mpeg")
+    return send_file(filename, mimetype="audio/mpeg")
 
 # =========================
 # RUN
