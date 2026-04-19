@@ -1,80 +1,71 @@
-
+<!-- templates/index.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bidwiya AI</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Bidwiya AI</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
-<div class="box">
+    <div class="bg-glow"></div>
 
-<div class="top">
-<div class="logo">AI</div>
-<div>
-<h2>BIDWIYA AI</h2>
-<p>Online Memory Assistant</p>
-</div>
-</div>
+    <div class="chat-app">
 
-<div id="chat"></div>
+        <!-- HEADER -->
+        <div class="topbar">
 
-<div class="row">
-<input id="msg" placeholder="Type message...">
-<button onclick="sendMsg()">Send</button>
-</div>
+            <div class="left">
 
-</div>
+                <div class="avatar-wrap">
+                    <img src="/static/myphoto.jpg" class="avatar">
+                </div>
 
-<script>
+                <div class="user-info">
+                    <h2>Bidwiya AI</h2>
+                    <p>Online now</p>
+                </div>
 
-function time(){
-let d=new Date();
-return d.getHours()+":"+String(d.getMinutes()).padStart(2,"0");
-}
+            </div>
 
-function addMsg(text,type){
+            <div class="right-icons">
+                <span>📞</span>
+                <span>📹</span>
+                <span>⋮</span>
+            </div>
 
-document.getElementById("chat").innerHTML += `
-<div class="msg ${type}">
-${text}
-<span>${time()}</span>
-</div>
-`;
+        </div>
 
-document.getElementById("chat").scrollTop=999999;
-}
+        <!-- CHAT -->
+        <div id="chatBox" class="chat-box"></div>
 
-async function sendMsg(){
+        <!-- TYPING -->
+        <div id="typing" class="typing">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
 
-let input=document.getElementById("msg");
-let text=input.value.trim();
+        <!-- INPUT -->
+        <div class="bottom-bar">
 
-if(text=="") return;
+            <button class="emoji">😊</button>
 
-addMsg(text,"user");
-input.value="";
+            <input type="text" id="msg" placeholder="Type your message...">
 
-let res = await fetch("/chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({msg:text})
-});
+            <button class="mic">🎤</button>
 
-let data = await res.json();
+            <button onclick="sendMsg()" class="send">➤</button>
 
-addMsg(data.reply,"bot");
+        </div>
 
-new Audio("/voice?text="+encodeURIComponent(data.reply)).play();
-}
+    </div>
 
-document.getElementById("msg").addEventListener("keypress",function(e){
-if(e.key=="Enter") sendMsg();
-});
-
-</script>
+    <script src="/static/script.js"></script>
 
 </body>
+
 </html>
