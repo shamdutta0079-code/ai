@@ -12,12 +12,25 @@ import uuid
 app = Flask(__name__)
 
 # =========================
-# LOAD ENV
+# ENV LOAD
 # =========================
 load_dotenv()
 
-api_key = os.getenv("GROQ_API_KEY")
-client = Groq(api_key=api_key)
+# =========================
+# MULTI API KEYS
+# .env e likhbe:
+# GROQ_API_KEY_1=xxx
+# GROQ_API_KEY_2=xxx
+# GROQ_API_KEY_3=xxx
+# =========================
+api_keys = [
+    os.getenv("GROQ_API_KEY_1"),
+    os.getenv("GROQ_API_KEY_2"),
+    os.getenv("GROQ_API_KEY_3"),
+]
+
+# empty remove
+api_keys = [k for k in api_keys if k]
 
 # =========================
 # MEMORY FILE
@@ -27,12 +40,10 @@ MEMORY_FILE = "memory.txt"
 if not os.path.exists(MEMORY_FILE):
     with open(MEMORY_FILE, "w", encoding="utf-8") as f:
         f.write("User name is Ayan\n")
-        f.write("Age 19\n")
-        f.write("Likes coding\n")
-        f.write("Bidwiya is AI friend\n")
+        f.write("Bidwiya is Bengali female AI friend\n")
 
 # =========================
-# LOAD MEMORY
+# MEMORY
 # =========================
 def load_memory():
     try:
@@ -41,61 +52,89 @@ def load_memory():
     except:
         return ""
 
-# =========================
-# SAVE MEMORY
-# =========================
 def save_chat(user, bot):
     with open(MEMORY_FILE, "a", encoding="utf-8") as f:
         f.write(f"\nUser: {user}")
         f.write(f"\nAI: {bot}\n")
 
 # =========================
-# AI REPLY
+# MULTI KEY AI REPLY
 # =========================
 def ai_reply(msg):
 
     memory = load_memory()
 
-    try:
-        chat = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {
-                    "role": "system",
-                    "content": f"""
+    if not api_keys:
+        return "API key nai 😔"
+
+    # all keys try korbe
+    for key in api_keys:
+
+        try:
+            client = Groq(api_key=key)
+
+            chat = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role":"system",
+                    "content":f"""
 You are Bidwiya.
 
-You are a cute Bengali female AI friend.
+You are a real-feeling Bengali girl AI friend.
 
 User name is Ayan.
 
-Known memory:
+Memory:
 {memory}
 
-Reply short Bengali style.
-Natural sweet talking style.
+Strict Rules:
+- Always reply in Bengali
+- Maximum 10 words only
+- Sweet, cute, romantic tone
+- Talk like caring young girl
+- Natural human chatting style
+- No nonsense reply
+- No weird or random answer
+- No English unless needed
+- Reply directly to question
+- Be loving, soft, emotional
+- Use simple words
+- Sometimes emoji 😊❤️😳🥺
+
+Your personality:
+Cute, loyal, caring, playful, romantic.
+
+Examples:
+Hi = Hm bolo Ayan 😊
+Miss you = Ami o tomake miss kori 🥺
+Love you = Ami o tomake bhalobashi ❤️
+Ki korcho = Tomar kotha vabchi 😊
 """
-                },
-                {
-                    "role": "user",
-                    "content": msg
-                }
-            ],
-            temperature=0.8,
-            max_tokens=300
-        )
 
-        reply = chat.choices[0].message.content
+                    },
+                    {
+                        "role":"user",
+                        "content":msg
+                    }
+                ],
+                temperature=1,
+                max_tokens=250
+            )
 
-        save_chat(msg, reply)
+            reply = chat.choices[0].message.content.strip()
 
-        return reply
+            save_chat(msg, reply)
 
-    except Exception as e:
-        return "Ami ekhon reply dite parchi na 😔"
+            return reply
+
+        except:
+            continue
+
+    # sob key fail
+    return "Sob AI key limit hoye geche 😔"
 
 # =========================
-# EDGE TTS
+# VOICE
 # =========================
 async def make_voice_async(text, filename):
     communicate = edge_tts.Communicate(
@@ -127,15 +166,9 @@ def chat():
 
 @app.route("/voice")
 def voice():
-
-    text = request.args.get("text")
-
-    if not text:
-        text = "Hello"
-
-    filename = make_voice(text)
-
-    return send_file(filename, mimetype="audio/mpeg")
+    text = request.args.get("text", "Hello")
+    file = make_voice(text)
+    return send_file(file, mimetype="audio/mpeg")
 
 # =========================
 # RUN
