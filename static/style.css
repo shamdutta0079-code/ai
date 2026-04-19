@@ -8,32 +8,35 @@
     font-family: Segoe UI, sans-serif;
 }
 
-html,
-body {
+html {
     width: 100%;
     height: 100%;
 }
 
 body {
-    min-height: 100vh;
+    width: 100%;
+    min-height: 100dvh;
+    background: #03111d;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #03111d;
-    overflow: hidden;
 }
 
-/* ===== BACKGROUND ===== */
+/* ===== BACKGROUND GLOW ===== */
 .bg-glow {
     position: fixed;
+    inset: auto;
     width: 600px;
     height: 600px;
+    top: -120px;
+    left: -120px;
+    border-radius: 50%;
     background: radial-gradient(circle, #00ffaa55, transparent 70%);
-    filter: blur(80px);
-    top: -100px;
-    left: -100px;
-    animation: moveGlow 8s infinite alternate;
+    filter: blur(90px);
+    animation: moveGlow 8s infinite alternate ease-in-out;
     z-index: 0;
+    pointer-events: none;
 }
 
 @keyframes moveGlow {
@@ -42,7 +45,7 @@ body {
     }
 
     100% {
-        transform: translate(120px, 80px);
+        transform: translate(140px, 90px);
     }
 }
 
@@ -52,25 +55,26 @@ body {
     z-index: 2;
     width: 100%;
     max-width: 430px;
-    height: 100vh;
-    max-height: 100vh;
-    background: rgba(8, 20, 32, .95);
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    background: rgba(8, 20, 32, .96);
     backdrop-filter: blur(20px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 0 40px #000;
+    box-shadow: 0 0 40px rgba(0, 0, 0, .55);
 }
 
 /* ===== HEADER ===== */
 .topbar {
     width: 100%;
     min-height: 78px;
-    background: rgba(255, 255, 255, .05);
+    padding: 12px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
+    background: rgba(255, 255, 255, .04);
     border-bottom: 1px solid rgba(255, 255, 255, .05);
     flex-shrink: 0;
 }
@@ -98,26 +102,26 @@ body {
 .online-dot {
     width: 12px;
     height: 12px;
-    background: #00ff66;
     border-radius: 50%;
+    background: #00ff66;
     position: absolute;
-    right: 3px;
+    right: 2px;
     bottom: 4px;
-    box-shadow: 0 0 10px #00ff66;
+    box-shadow: 0 0 12px #00ff66;
 }
 
 .left h2 {
-    font-size: 20px;
     color: #fff;
+    font-size: 20px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .left p {
+    margin-top: 2px;
     font-size: 13px;
     color: #8efdd2;
-    margin-top: 2px;
 }
 
 .right-icons {
@@ -133,9 +137,10 @@ body {
     cursor: pointer;
 }
 
-/* ===== CHAT ===== */
+/* ===== CHAT AREA ===== */
 .chat-box {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 15px;
@@ -151,33 +156,34 @@ body {
     border-radius: 10px;
 }
 
+/* ===== MESSAGE ===== */
 .msg {
-    margin-bottom: 16px;
     display: flex;
     flex-direction: column;
     max-width: 78%;
+    margin-bottom: 16px;
     animation: fade .25s ease;
+}
+
+.msg.ai {
+    align-items: flex-start;
+}
+
+.msg.user {
+    align-items: flex-end;
+    margin-left: auto;
 }
 
 @keyframes fade {
     from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translateY(14px);
     }
 
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-.msg.user {
-    margin-left: auto;
-    align-items: flex-end;
-}
-
-.msg.ai {
-    align-items: flex-start;
 }
 
 .name {
@@ -194,31 +200,30 @@ body {
 
 .bubble {
     padding: 14px 16px;
+    border-radius: 18px;
     font-size: 18px;
     line-height: 1.45;
-    border-radius: 18px;
+    color: #fff;
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .msg.ai .bubble {
     background: #1c2d3b;
-    color: #fff;
     border-top-left-radius: 6px;
 }
 
 .msg.user .bubble {
     background: linear-gradient(135deg, #00b894, #008f7a);
-    color: #fff;
     border-top-right-radius: 6px;
 }
 
 .time {
-    font-size: 12px;
     margin-top: 4px;
-    opacity: .7;
-    color: #ccc;
     padding: 0 6px;
+    font-size: 12px;
+    color: #c9c9c9;
+    opacity: .7;
 }
 
 /* ===== TYPING ===== */
@@ -228,11 +233,11 @@ body {
 }
 
 .typing span {
-    display: inline-block;
     width: 8px;
     height: 8px;
-    background: #00ffaa;
     border-radius: 50%;
+    background: #00ffaa;
+    display: inline-block;
     margin-right: 5px;
     animation: bounce 1s infinite;
 }
@@ -258,15 +263,16 @@ body {
     }
 }
 
-/* ===== INPUT ===== */
+/* ===== INPUT BAR ===== */
 .bottom-bar {
     width: 100%;
     min-height: 80px;
+    padding: 12px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    background: #122433;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px;
-    background: #122433;
     flex-shrink: 0;
 }
 
@@ -284,7 +290,7 @@ body {
 }
 
 .bottom-bar input::placeholder {
-    color: #9ca3af;
+    color: #aab4be;
 }
 
 .bottom-bar button {
@@ -292,8 +298,8 @@ body {
     height: 50px;
     border: none;
     border-radius: 50%;
-    font-size: 20px;
     cursor: pointer;
+    font-size: 20px;
     flex-shrink: 0;
 }
 
@@ -307,30 +313,29 @@ body {
     background: linear-gradient(135deg, #00ffaa, #00c3ff);
     color: #fff;
     font-size: 22px;
-    box-shadow: 0 0 15px #00ffaa88;
+    box-shadow: 0 0 16px #00ffaa88;
 }
 
 /* ===== TABLET ===== */
-@media(max-width:768px) {
+@media (max-width:768px) {
     .chat-app {
         max-width: 100%;
         width: 100%;
-        height: 100vh;
     }
 }
 
 /* ===== MOBILE ===== */
-@media(max-width:600px) {
+@media (max-width:600px) {
 
     body {
         align-items: stretch;
     }
 
     .chat-app {
-        max-width: 100%;
         width: 100%;
-        height: 100vh;
-        border-radius: 0;
+        max-width: 100%;
+        height: 100dvh;
+        min-height: 100dvh;
     }
 
     .topbar {
@@ -372,6 +377,7 @@ body {
     .bottom-bar {
         min-height: 72px;
         padding: 10px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom));
         gap: 8px;
     }
 
@@ -388,7 +394,7 @@ body {
 }
 
 /* ===== SMALL PHONE ===== */
-@media(max-width:400px) {
+@media (max-width:400px) {
 
     .left h2 {
         font-size: 16px;
